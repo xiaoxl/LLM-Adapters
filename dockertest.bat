@@ -1,0 +1,1 @@
+docker run -d -it -v %CD%:/home --name llm1.1 xiaoxl1985/llm_adapters:v1.1
