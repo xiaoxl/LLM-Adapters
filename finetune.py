@@ -345,3 +345,14 @@ def generate_prompt(data_point):
 
 if __name__ == "__main__":
     fire.Fire(train)
+    # import argparse
+    # import sys
+
+    # print(sys.argv)
+
+    # parser = argparse.ArgumentParser()
+    # parser.add_argument('-a', '--aaa')
+    # print(parser.parse_args())
+    # import os
+
+    # print(os.environ)
