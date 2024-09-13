@@ -1,5 +1,6 @@
 import os
 from finetune import train
+from evaluate import main
 
 os.environ['WORLD_SIZE'] = '2'
 os.environ['CUDA_VISIBLE_DEVICES'] = '0,1'
@@ -26,3 +27,19 @@ train(base_model=base_model,
         val_set_size=val_set_size,
         adapter_name=adapter_name
         )
+
+os.environ['CUDA_VISIBLE_DEVICES'] = '0'
+model = 'LLaMA-7B'
+adapter = 'LoRA'
+dataset = 'SVAMP'
+base_model = 'yahma/llama-7b-hf'
+lora_weights = './trained_models/llama-lora'
+
+
+main(
+    model=model, 
+    adapter=adapter,
+    dataset=dataset,
+    base_model=base_model,
+    lora_weights=lora_weights
+    )
