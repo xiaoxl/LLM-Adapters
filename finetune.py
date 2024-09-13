@@ -344,4 +344,10 @@ def generate_prompt(data_point):
 
 
 if __name__ == "__main__":
-    fire.Fire(train)
+    # fire.Fire(train)
+    import argparse
+    parser = argparse.ArgumentParser()
+    print(parser.parse_args())
+
+
+# CUDA_VISIBLE_DEVICES=6 python finetune.py   --base_model 'yahma/llama-7b-hf' --data_path 'ft-training_set/commonsense_170k.json' --output_dir './trained_models/llama-7b-lora-commonsense-r32-v120/' --batch_size 16 --micro_batch_size 4   --num_epochs 3  --learning_rate 3e-4  --cutoff_len 256  --val_set_size 120  --eval_step 80  --save_step 80  --adapter_name lora  --target_modules '["q_proj", "k_proj", "v_proj", "up_proj", "down_proj"]'  --lora_r 32  --lora_alpha 64
