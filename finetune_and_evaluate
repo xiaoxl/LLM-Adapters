@@ -1,0 +1,60 @@
+#!/bin/bash
+
+cd ..
+source env/bin/activate
+cd LLM-Adapters
+
+function finetune {
+	cat <<- _EOF_
+	$(CUDA_VISIBLE_DEVICES=${device_id} python donny_finetune2.py \
+  --base_model 'yahma/llama-7b-hf'  \
+  --data_path 'ft-training_set/digit_train.json' \
+  --output_dir './trained_models/llama-7b-lora-digit-train-r32-v0-prompt2-e${i}/'\
+  --batch_size 16 \
+  --micro_batch_size 4 \
+  --num_epochs ${i} \
+  --learning_rate 3e-4 \
+  --cutoff_len 256 \
+  --val_set_size 0 \
+  --eval_step 80 \
+  --save_step 80 \
+  --adapter_name lora \
+  --target_modules '["q_proj", "k_proj", "v_proj", "up_proj", "down_proj"]' \
+  --lora_r 32 \
+  --lora_alpha 64) # finetune
+	_EOF_
+	return
+}
+
+
+function evaluate_test {
+	cat <<- _EOF_
+	$(CUDA_VISIBLE_DEVICES=${device_id} python donny_evaluate2.py \
+    --model LLaMA-7B \
+    --adapter LoRA \
+    --dataset digit_${dataset} \
+    --batch_size 16 \
+    --base_model 'yahma/llama-7b-hf' \
+    --lora_weights './trained_models/llama-7b-lora-digit-train-r32-v0-prompt2-e${i}/'  ) # evaluate
+	_EOF_
+	return
+}
+
+device_id=5
+output_dir="../my_scripts/results2/"
+for i in 3 4 5 6; do
+	echo "i=${i}, start finetuning!"
+	finetune > ${output_dir}e${i}_finetune
+	echo "Finish finetune i=${i}"
+
+	echo "Start evaluate i=${i}"
+	for dataset in "train" "test" "dev"; do
+		echo "Evaluate i=${i}, dataset=${dataset}"
+		evaluate > ${output_dir}e${i}_evaluate_${dataset}	
+	done
+
+	echo "Finish evaluate i=${i}"
+	echo "Finish experiment on i=${i}"
+done
+
+deactivate
